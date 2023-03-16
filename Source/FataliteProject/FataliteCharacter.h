@@ -8,6 +8,8 @@
 #include "Camera/CameraComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "Components/ArrowComponent.h"
+#include "Animation/AnimInstance.h"
+
 #include "GameFramework/SpringArmComponent.h"
 #include "FataliteCharacter.generated.h"
 
@@ -19,13 +21,21 @@ class FATALITEPROJECT_API AFataliteCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AFataliteCharacter(const FObjectInitializer& ObjectInitializer);
-
+	UPROPERTY(BlueprintReadOnly)
+		UAnimInstance* AnimInstance;
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* SpringArm;
+
 	UPROPERTY(VisibleAnywhere, Category = Viusal)
 	USkeletalMeshComponent* SkeletalMeshComponent;
+
 	UPROPERTY(VisibleAnywhere, Category = Collision)
 	UCapsuleComponent* MainCapsuleComponent;
+
+	UStaticMeshComponent* SwordStaticMesh;
+
+	UAnimMontage* SwordAttackAnim;
+
 	UCameraComponent* MainCamera;
 	UArrowComponent* MainArrow;
 
@@ -41,4 +51,6 @@ private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void UpDownMovement(float NewAxisValue);
 	void LeftRightMovement(float NewAxisValue);
+	void Turn(float NewAxisValue);
+	void LookUp(float NewAxisValue);
 };
