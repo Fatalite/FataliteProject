@@ -10,6 +10,8 @@
 #include "Components/ArrowComponent.h"
 #include "Animation/AnimInstance.h"
 
+#include "SwordActor.h"
+
 #include "GameFramework/SpringArmComponent.h"
 #include "FataliteCharacter.generated.h"
 
@@ -38,6 +40,10 @@ public:
 
 	UCameraComponent* MainCamera;
 	UArrowComponent* MainArrow;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sword")
+	TSubclassOf<ASwordActor> SwordClass;
 
 protected:
 	// Called when the game starts or when spawned
