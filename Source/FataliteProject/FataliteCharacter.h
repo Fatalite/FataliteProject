@@ -8,8 +8,8 @@
 #include "Camera/CameraComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "Components/ArrowComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Animation/AnimInstance.h"
-
 #include "SwordActor.h"
 
 #include "GameFramework/SpringArmComponent.h"
@@ -41,9 +41,14 @@ public:
 	UCameraComponent* MainCamera;
 	UArrowComponent* MainArrow;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sword")
 	TSubclassOf<ASwordActor> SwordClass;
+	
+	bool isAttacking = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+	class UAnimMontage* SwingMontage;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -59,4 +64,6 @@ private:
 	void LeftRightMovement(float NewAxisValue);
 	void Turn(float NewAxisValue);
 	void LookUp(float NewAxisValue);
+	void Jump();
+	void Attack();
 };

@@ -21,6 +21,18 @@ ASwordActor::ASwordActor()
 		UE_LOG(LogTemp, Log, TEXT("Failed Static Sword Mesh "));
 	}
 	RootComponent = SwordMesh;
+	PlaneComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlaneComponent"));
+	PlaneComponent->SetupAttachment(RootComponent);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> PlaneMesh(TEXT("StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
+	if (PlaneMesh.Succeeded())
+	{
+		PlaneComponent->SetStaticMesh(PlaneMesh.Object);
+		
+	}
+	PlaneComponent->AddRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+
+	SwordMesh->SetCollisionProfileName(TEXT("NoCollision"));
+	PlaneComponent->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
 // Called when the game starts or when spawned
@@ -43,4 +55,10 @@ void ASwordActor::AttachObjectToSwordSocket(AActor* ObjectToAttach, FName Socket
 	{
 		ObjectToAttach->AttachToComponent(SwordMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 	}
+}
+
+
+void ASwordActor::SetPlane(FRotator Rotation)
+{
+	PlaneComponent->SetRelativeRotation(Rotation);
 }

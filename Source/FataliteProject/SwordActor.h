@@ -17,6 +17,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UStaticMeshComponent* SwordMesh;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class UStaticMeshComponent* PlaneComponent;
+
 	UFUNCTION(BlueprintCallable, Category = "Sword")
 	void AttachObjectToSwordSocket(class AActor* ObjectToAttach, FName SocketName);
 
@@ -27,5 +30,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	void SetPlane(FRotator Rotation);
 };
