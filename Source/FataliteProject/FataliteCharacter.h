@@ -66,4 +66,7 @@ private:
 	void LookUp(float NewAxisValue);
 	void Jump();
 	void Attack();
+	// Skeleton
+	//void PrintSkeletalMeshTriangles(USkeletalMesh* SkeletalMesh);
+
 };

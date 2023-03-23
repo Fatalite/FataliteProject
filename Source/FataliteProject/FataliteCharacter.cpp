@@ -83,7 +83,7 @@ void AFataliteCharacter::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("SwordRightHandSocket Not Spawned"));
 	}
 	// Actor Component Location
-	SpawnedSword->SetPlane(FRotator(0.0f, 90.0f, 0.0f));
+	//SpawnedSword->SetPlane(FRotator(0.0f, 90.0f, 0.0f));
 
 }
 
@@ -91,7 +91,8 @@ void AFataliteCharacter::BeginPlay()
 void AFataliteCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+	float FrameRate = 1.0f / DeltaTime;
+	//UE_LOG(LogTemp, Log, TEXT("Current Frame Rate: %f"), FrameRate);
 }
 
 // Called to bind functionality to input
@@ -157,3 +158,6 @@ void AFataliteCharacter::Attack() {
 	
 	
 }
+
+
+
