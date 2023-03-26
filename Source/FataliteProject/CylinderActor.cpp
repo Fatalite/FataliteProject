@@ -56,11 +56,11 @@ ACylinderActor::ACylinderActor()
         int32 lineCount = FileContent.ParseIntoArray(lines, TEXT("\n"), true);
         FileContent.Empty();
         TArray<FString> lineElements;
-        for (int i = 1; i < lineCount; i++) {
+        for (int i = 1; i < lineCount-1; i++) {
             FString Line = lines[i].TrimStartAndEnd();
             lineElements.Empty();
             int32 elementCount = Line.ParseIntoArray(lineElements, TEXT(" "), true);
-            Vertices.Add(FVector(FCString::Atof(*lineElements[1]), FCString::Atof(*lineElements[3]), FCString::Atof(*lineElements[2])));
+            Vertices.Add(FVector(FCString::Atod(*lineElements[1]), FCString::Atod(*lineElements[3]), FCString::Atod(*lineElements[2])));
         }
         for (FVector fv : Vertices) {
             UE_LOG(LogTemp, Error, TEXT("%s"), *fv.ToString());
@@ -83,11 +83,15 @@ ACylinderActor::ACylinderActor()
         int32 lineCount = FileContent.ParseIntoArray(lines, TEXT("\n"), true);
         FileContent.Empty();
         TArray<FString> lineElements;
-        for (int i = 1; i < lineCount; i++) {
+        for (int i = 1; i < lineCount-1; i++) {
             FString Line = lines[i].TrimStartAndEnd();
             lineElements.Empty();
             int32 elementCount = Line.ParseIntoArray(lineElements, TEXT(" "), true);
-            Triangles.Add((FCString::Atoi(*lineElements[1]), FCString::Atoi(*lineElements[3]), FCString::Atoi(*lineElements[2])));
+            UE_LOG(LogTemp, Error, TEXT("%d"), elementCount);
+            UE_LOG(LogTemp, Error, TEXT("-----------------"));
+            Triangles.Add((FCString::Atoi(*lineElements[1]) - 1));
+            Triangles.Add(FCString::Atoi(*lineElements[3]) - 1);
+            Triangles.Add(FCString::Atoi(*lineElements[2]) - 1);
             
         }
         for (int fv : Triangles) {
