@@ -35,6 +35,70 @@ ACylinderActor::ACylinderActor()
     FStaticMeshLODResources& LODModel = StaticMesh->GetRenderData()->LODResources[0];
     FIndexArrayView Indices = LODModel.IndexBuffer.GetArrayView();
     const uint32 NumSections = LODModel.Sections.Num();
+
+    //Importing File
+    // Read the OBJ file
+    TArray<FVector> Vertices;
+    TArray<int32> Triangles;
+
+    FString FilePath("C:\\Users\\ugly2\\Downloads\\tetgen1.6.0\\tetgen1.6.0\\cylinder.1.node");
+    FString FileContent;
+    if (!FFileHelper::LoadFileToString(FileContent, *FilePath))
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load Vertice(Node) file: %s"), *FilePath);
+        return;
+    }
+    else {
+        //UE_LOG(LogTemp, Error, TEXT("%s"), *FileContent);
+        TArray<FString> lines;
+
+        //TArray<int32> Triangles;
+        int32 lineCount = FileContent.ParseIntoArray(lines, TEXT("\n"), true);
+        FileContent.Empty();
+        TArray<FString> lineElements;
+        for (int i = 1; i < lineCount; i++) {
+            FString Line = lines[i].TrimStartAndEnd();
+            lineElements.Empty();
+            int32 elementCount = Line.ParseIntoArray(lineElements, TEXT(" "), true);
+            Vertices.Add(FVector(FCString::Atof(*lineElements[1]), FCString::Atof(*lineElements[3]), FCString::Atof(*lineElements[2])));
+        }
+        for (FVector fv : Vertices) {
+            UE_LOG(LogTemp, Error, TEXT("%s"), *fv.ToString());
+        }
+    }
+
+    FilePath = "C:\\Users\\ugly2\\Downloads\\tetgen1.6.0\\tetgen1.6.0\\cylinder.1.face";
+    FileContent.Empty();
+
+    if (!FFileHelper::LoadFileToString(FileContent, *FilePath))
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load Face(Triangles) file: %s"), *FilePath);
+        return;
+    }
+    else {
+        //UE_LOG(LogTemp, Error, TEXT("%s"), *FileContent);
+        TArray<FString> lines;
+
+
+        int32 lineCount = FileContent.ParseIntoArray(lines, TEXT("\n"), true);
+        FileContent.Empty();
+        TArray<FString> lineElements;
+        for (int i = 1; i < lineCount; i++) {
+            FString Line = lines[i].TrimStartAndEnd();
+            lineElements.Empty();
+            int32 elementCount = Line.ParseIntoArray(lineElements, TEXT(" "), true);
+            Triangles.Add((FCString::Atoi(*lineElements[1]), FCString::Atoi(*lineElements[3]), FCString::Atoi(*lineElements[2])));
+            
+        }
+        for (int fv : Triangles) {
+            UE_LOG(LogTemp, Error, TEXT("%d"), fv);
+        }
+    }
+    UpperProceduralMeshComponent->ClearAllMeshSections();
+    UpperProceduralMeshComponent->CreateMeshSection_LinearColor(0, Vertices, Triangles, TArray<FVector>(), TArray<FVector2D>(), TArray<FLinearColor>(), TArray<FProcMeshTangent>(), false);
+
+    /*
+    
     //LowerProceduralMeshComponent->AddToRoot();
     for (uint32 i = 0; i < NumSections; i++) {
         TArray< FVector > TmpVertices;
@@ -50,45 +114,14 @@ ACylinderActor::ACylinderActor()
         //LowerProceduralMeshComponent->CreateMeshSection(
           //  i, TmpVertices, TmpTriangles, TmpNormals, TmpUVs, TmpColors, TmpTangents, false);
     }
+    */
     UpperProceduralMeshComponent->SetCollisionProfileName(TEXT("OverlapAll"));
     CylinderMeshComponent->SetCollisionProfileName(TEXT("OverlapAll"));
     // Enable physics simulation for the mesh
     //CylinderMeshComponent->SetSimulatePhysics(true);
     //UpperProceduralMeshComponent->SetSimulatePhysics(true); 
     //LowerProceduralMeshComponent->SetSimulatePhysics(true);
-    //Bounds = CylinderMeshComponent->CalcBounds(GetTransform());
-    /*
-    float GridSpacing = 100.0f; // Set the desired grid spacing
-    FVector GridSize(
-        FMath::CeilToInt(Bounds.BoxExtent.X * 2 / GridSpacing),
-        FMath::CeilToInt(Bounds.BoxExtent.Y * 2 / GridSpacing),
-        FMath::CeilToInt(Bounds.BoxExtent.Z * 2 / GridSpacing)
-    );
-
-    TArray<FVector> TetrahedronVertices;
-    TArray<int32> TetrahedronIndices;
-
-    for (int32 x = 0; x < GridSize.X; ++x)
-    {
-        for (int32 y = 0; y < GridSize.Y; ++y)
-        {
-            for (int32 z = 0; z < GridSize.Z; ++z)
-            {
-                FVector GridOrigin = Bounds.Origin - Bounds.BoxExtent;
-                FVector CellOrigin = GridOrigin + FVector(x, y, z) * GridSpacing;
-
-                // Generate vertices and indices for the tetrahedra in the current grid cell
-                TArray<FVector> CellTetrahedronVertices;
-                TArray<int32> CellTetrahedronIndices;
-
-                // ... Populate CellTetrahedronVertices and CellTetrahedronIndices ...
-
-                TetrahedronVertices.Append(CellTetrahedronVertices);
-                TetrahedronIndices.Append(CellTetrahedronIndices);
-            }
-        }
-    }
-    */
+    
 
 }
 
@@ -99,6 +132,8 @@ void ACylinderActor::BeginPlay()
     //Register the events
     CylinderMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ACylinderActor::OnSwordBeginOverlap);
     CylinderMeshComponent->OnComponentEndOverlap.AddDynamic(this, &ACylinderActor::OnSwordEndOverlap);
+
+    
 }
 
 // Called every frame

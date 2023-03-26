@@ -77,10 +77,9 @@ void ASwordActor::OnSwordBeginOverlap(
 	if (!ParentCharacter || OtherActor == Cast<AActor>(ParentCharacter) || OtherActor == this) {
 		return;
 	}
-	UE_LOG(LogTemp, Log, TEXT("Start Collide"));
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
-		
+		UE_LOG(LogTemp, Log, TEXT("Start Collide"));
 		// This is the point where the sword started to collide with the other mesh
 		StartCollisionVector = SweepResult.TraceStart;
 		UE_LOG(LogTemp, Error, TEXT("%s"), *SweepResult.GetActor()->GetFName().ToString());
