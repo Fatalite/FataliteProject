@@ -91,8 +91,6 @@ void AFataliteCharacter::BeginPlay()
 void AFataliteCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	float FrameRate = 1.0f / DeltaTime;
-	//UE_LOG(LogTemp, Log, TEXT("Current Frame Rate: %f"), FrameRate);
 }
 
 // Called to bind functionality to input

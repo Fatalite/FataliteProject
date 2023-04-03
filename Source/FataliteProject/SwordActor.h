@@ -45,7 +45,15 @@ public:
 
 	FVector3d StartCollisionVector;
 	FVector3d EndCollisionVector;
-	FVector3d PlaneNormalVector = FVector3d(static_cast<double>(1.2), static_cast<double>(3.2), static_cast<double>(4.4));
+	FVector PreviousStartToEnd = FVector(0.0f,0.0f,0.0f);
+	FVector CurrentStartToEnd;
+	FVector PreviousLeftToRight = FVector(0.0f, 0.0f, 0.0f);
+	FVector CurrentLeftToRight;
+
+	FVector PreviousStartLocation;
+	FVector CurrentStartLocation;
+	FVector PreviousEndLocation;
+	FVector CurrentEndLocation;
 
 protected:
 	// Called when the game starts or when spawned
@@ -62,4 +70,12 @@ public:
 
 	void SaveStaticMeshTriangles(UStaticMeshComponent* StaticMeshComponent);
 	FVector3d GetNormalVector();
+	
+	FVector& GetPreviousStartToEndVector();
+	FVector& GetCurrentStartToEndVector();
+
+	FVector& GetPreviousStartLocation();
+	FVector& GetCurrentStartLocation();
+	FVector& GetPreviousEndLocation();
+	FVector& GetCurrentEndLocation();
 };

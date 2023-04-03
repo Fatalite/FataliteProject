@@ -21,18 +21,8 @@ ASwordActor::ASwordActor()
 		UE_LOG(LogTemp, Log, TEXT("Failed Static Sword Mesh "));
 	}
 	RootComponent = SwordMesh;
-	PlaneComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlaneComponent"));
-	PlaneComponent->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> PlaneMesh(TEXT("StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
-	if (PlaneMesh.Succeeded())
-	{
-		PlaneComponent->SetStaticMesh(PlaneMesh.Object);
-		
-	}
-	PlaneComponent->AddRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
 
 	SwordMesh->SetCollisionProfileName(TEXT("OverlapAll"));
-	PlaneComponent->SetCollisionProfileName(TEXT("NoCollision"));
 	//IngoreOnlyPawn
 }
 
@@ -51,7 +41,17 @@ void ASwordActor::BeginPlay()
 void ASwordActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	PreviousStartLocation = CurrentStartLocation;
+	PreviousEndLocation = CurrentEndLocation;
+	CurrentStartLocation = SwordMesh->GetSocketLocation("StartPoint");
+	CurrentEndLocation = SwordMesh->GetSocketLocation("EndPoint");
 
+
+	PreviousStartToEnd = CurrentStartToEnd;
+	PreviousLeftToRight = CurrentLeftToRight;
+	CurrentStartToEnd = SwordMesh->GetSocketLocation("EndPoint") - SwordMesh->GetSocketLocation("StartPoint");
+	CurrentLeftToRight = SwordMesh->GetSocketLocation("RightPoint") - SwordMesh->GetSocketLocation("LeftPoint");
+	//UE_LOG(LogTemp, Error, TEXT("%s"), *CurrentLeftToRight.ToString());
 }
 
 void ASwordActor::AttachObjectToSwordSocket(AActor* ObjectToAttach, FName SocketName)
@@ -79,12 +79,6 @@ void ASwordActor::OnSwordBeginOverlap(
 	}
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Start Collide"));
-		// This is the point where the sword started to collide with the other mesh
-		StartCollisionVector = SweepResult.TraceStart;
-		UE_LOG(LogTemp, Error, TEXT("%s"), *SweepResult.GetActor()->GetFName().ToString());
-		UE_LOG(LogTemp, Error, TEXT("%s"), *StartCollisionVector.ToString());
-		// You can now use the collision point for your purposes
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("Cant get Start Vector"));
@@ -101,48 +95,7 @@ void ASwordActor::OnSwordEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	else {
 		if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor != Cast<AActor>(ParentCharacter))
 		{
-			UE_LOG(LogTemp, Error, TEXT("Not Parent"));
-			FString tmp = OtherActor->GetFName().ToString();
-			//std::string a = std::string(TCHAR_TO_UTF8(*tmp));
-			UE_LOG(LogTemp, Error, TEXT("%s"), *tmp);
-			// Perform a line trace to find the point where the sword stopped intersecting the other mesh
-			FVector Start = GetActorLocation();
-			FVector End = Start + (GetActorForwardVector() * 100.0f); // Adjust TraceDistance according to your needs
-			FHitResult HitResult;
-			FCollisionQueryParams TraceParams(FName(TEXT("Sword Trace")), true, this);
-			TraceParams.bTraceComplex = true;
-			TraceParams.bReturnPhysicalMaterial = true;
-
-			// Perform the line trace
-			if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams))
-			{
-				// This is the point where the sword stopped intersecting the other mesh
-				EndCollisionVector = HitResult.TraceEnd;
-				// You can now use the end collision point for your purposes
-			}
-			else {
-				UE_LOG(LogTemp, Error, TEXT("Cant get End Vector"));
-			}
-
-			FVector ParentForwardVector;
-			UE_LOG(LogTemp, Error, TEXT("Cast for End Collide"));
-			ParentForwardVector = ParentCharacter->GetActorRightVector();
-			FVector StartToEndVector = EndCollisionVector - StartCollisionVector;
-			UE_LOG(LogTemp, Error, TEXT("%s"), *StartToEndVector.ToString());
-			FVector CuttingPlaneNormalVector = FVector::CrossProduct(StartToEndVector, ParentForwardVector);
-			//PlaneNormalVector = CuttingPlaneNormalVector;
-			//Get Static Mesh's Global Triangles
-			UStaticMeshComponent* param = Cast<UStaticMeshComponent>(OtherActor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
-			//UE_LOG(LogTemp, Error, TEXT("%s"), *param->GetFName().ToString());
-			if (param) {
-				SaveStaticMeshTriangles(param);
-			}
-			else {
-				UE_LOG(LogTemp, Error, TEXT("NO STATIC MESH"));
-			}
 			
-
-
 		}
 		else {
 			UE_LOG(LogTemp, Error, TEXT("Parent"));
@@ -200,9 +153,25 @@ void ASwordActor::SaveStaticMeshTriangles(UStaticMeshComponent* StaticMeshCompon
 }
 
 FVector3d ASwordActor::GetNormalVector() {
-	
-		
-		//UE_LOG(LogTemp, Error, TEXT("%f,%f,%f"), PlaneNormalVector.X, PlaneNormalVector.Y, PlaneNormalVector.Z);
-		return PlaneNormalVector;
+	return FVector::CrossProduct(CurrentLeftToRight, CurrentStartToEnd);
 }
 
+FVector& ASwordActor::GetPreviousStartToEndVector() {
+	return PreviousStartToEnd;
+}
+FVector& ASwordActor::GetCurrentStartToEndVector() {
+	return CurrentStartToEnd;
+}
+
+FVector& ASwordActor::GetPreviousStartLocation() {
+	return PreviousStartLocation;
+};
+FVector& ASwordActor::GetCurrentStartLocation() {
+	return CurrentStartLocation;
+}
+FVector& ASwordActor::GetPreviousEndLocation() {
+	return PreviousEndLocation;
+}
+FVector& ASwordActor::GetCurrentEndLocation() {
+	return CurrentEndLocation;
+}
