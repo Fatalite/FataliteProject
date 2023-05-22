@@ -3,6 +3,7 @@
 
 #include "SwordActor.h"
 #include "FataliteCharacter.h"
+#include "CylinderActor.h"
 // Sets default values
 ASwordActor::ASwordActor()
 {
@@ -23,15 +24,12 @@ ASwordActor::ASwordActor()
 	RootComponent = SwordMesh;
 
 	SwordMesh->SetCollisionProfileName(TEXT("OverlapAll"));
-	//IngoreOnlyPawn
 }
 
 // Called when the game starts or when spawned
 void ASwordActor::BeginPlay()
 {
 	Super::BeginPlay();
-	//PlaneNormalVector = FVector(0,0,0);
-	//Register the events
 	SwordMesh->OnComponentBeginOverlap.AddDynamic(this, &ASwordActor::OnSwordBeginOverlap);
 	SwordMesh->OnComponentEndOverlap.AddDynamic(this, &ASwordActor::OnSwordEndOverlap);
 
@@ -73,37 +71,21 @@ void ASwordActor::OnSwordBeginOverlap(
 	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AFataliteCharacter* ParentCharacter = Cast<AFataliteCharacter>(GetAttachParentActor());
-	if (!ParentCharacter || OtherActor == Cast<AActor>(ParentCharacter) || OtherActor == this) {
-		return;
-	}
-	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
-	{
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("Cant get Start Vector"));
+	ACylinderActor* CylinderActor = Cast<ACylinderActor>(OtherActor);
+	if (CylinderActor) {
+		PreviousStartLocation = SwordMesh->GetSocketLocation("StartPoint");
+		PreviousEndLocation = SwordMesh->GetSocketLocation("EndPoint");
 	}
 }
 
 void ASwordActor::OnSwordEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	AFataliteCharacter* ParentCharacter = Cast<AFataliteCharacter>(GetAttachParentActor());
-	UE_LOG(LogTemp, Log, TEXT("End Collide"));
-	if (!ParentCharacter) {
-		return;
-	}
-	else {
-		if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor != Cast<AActor>(ParentCharacter))
-		{
-			
-		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("Parent"));
-		}
-
+	ACylinderActor* CylinderActor = Cast<ACylinderActor>(OtherActor);
+	if (CylinderActor) {
+		CurrentStartLocation = SwordMesh->GetSocketLocation("StartPoint");
+		CurrentEndLocation = SwordMesh->GetSocketLocation("EndPoint");
 	}
 	
-
 }
 void ASwordActor::SaveStaticMeshTriangles(UStaticMeshComponent* StaticMeshComponent) {
 	if (!StaticMeshComponent)

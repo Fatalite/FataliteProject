@@ -27,7 +27,7 @@ AFataliteCharacter::AFataliteCharacter(const FObjectInitializer& ObjectInitializ
 	GetCharacterMovement()->AirControl = 0.2f;
 
 	//Anim Montage Importing
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> SwingMontageFinder(TEXT("AnimMontage'/Game/GreatswordComboPack/Animations/InPlace/SwingMontage.SwingMontage'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SwingMontageFinder(TEXT("AnimMontage'/Game/GreatswordComboPack/Animations/InPlace/Dash/DashMontage.DashMontage'"));
 	if (SwingMontageFinder.Succeeded())
 	{
 		UE_LOG(LogTemp, Log, TEXT("Swing Montage Imported"));
